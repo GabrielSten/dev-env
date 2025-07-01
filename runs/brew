@@ -1,0 +1,3 @@
+#!/usr/bin bash
+
+echo "this is to install brew"
