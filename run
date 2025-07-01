@@ -15,7 +15,7 @@ else
     find_exec_flag="-perm -111"
 fi
 
-scripts=$(find runs -maxdepth 1 -mindepth 1 -type f $find_exec_flag)
+mapfile -t scripts < <(find runs -maxdepth 1 -mindepth 1 -type f $find_exec_flag)
 
 while [[ $# > 0 ]]; do
     if [[ "$1" == "--dry" ]]; then
@@ -44,7 +44,7 @@ execute() {
 }
 
 log "run: filter=$filter"
-
+log "$scripts"
 for script in $scripts; do
     if echo "$script" | grep -qv "$filter"; then
         log "filtered: $filter -- $script"
