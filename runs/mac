@@ -10,4 +10,4 @@ brew upgrade
 
 brew install --cask font-jetbrains-mono adobe-creative-cloud alacritty blender datagrip discord docker docker-desktop figma gimp notion spotify zed
 
-brew install bun curl fzf go gopass grep grip k9s kustomize lua luarocks ollama openssh pass ripgrep sqlite tmux vault wget yabai yq jq
+brew install bun curl fzf go gopass grep grip k9s kustomize lua luarocks ollama openssh pass ripgrep sqlite tmux vault wget yabai yq jq neovim
