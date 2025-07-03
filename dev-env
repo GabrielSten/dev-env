@@ -43,6 +43,17 @@ copy_dir() {
     popd
 }
 
+copy_files() {
+    from=$1
+    to=$2
+    files=$(find "$from" -maxdepth 1 -mindepth 1 -type f)
+    for file in $files; do
+        name=$(basename "$file")
+        execute rm -f "$to/$name"
+        execute cp "$file" "$to/$name"
+    done
+}
+
 copy_file() {
     from=$1
     to=$2
@@ -56,4 +67,8 @@ log "--- dev-env ---"
 cd $script_dir
 
 mkdir -p "$XDG_CONFIG_HOME"
-copy_dir .config $XDG_CONFIG_HOME
+copy_dir .config "$XDG_CONFIG_HOME"
+mkdir -p "$HOME/bin"
+copy_files bin "$HOME/bin"
+copy_file .zshrc "$HOME"
+copy_file .zprofile "$HOME"
