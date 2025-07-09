@@ -45,7 +45,7 @@ execute() {
 
 log "run: filter=$filter"
 log "$scripts"
-for script in $scripts; do
+for script in "${scripts[@]}"; do
     if echo "$script" | grep -qv "$filter"; then
         log "filtered: $filter -- $script"
         continue
