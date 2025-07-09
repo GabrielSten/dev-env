@@ -68,7 +68,7 @@ cd $script_dir
 
 mkdir -p "$XDG_CONFIG_HOME"
 copy_dir .config "$XDG_CONFIG_HOME"
-mkdir -p "$HOME/bin"
-copy_files bin "$HOME/bin"
+mkdir -p "$HOME/.local/bin"
+copy_files .local/bin "$HOME/.local/bin"
 copy_file .zshrc "$HOME"
 copy_file .zprofile "$HOME"
