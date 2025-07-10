@@ -1,14 +1,16 @@
 #!/usr/bin/env bash
 
-script_dir="$(cd $(dirname "${BASH_SOURCE[0]}") && pwd)"
+set -euo pipefail
+
+script_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 dry="0"
 
-if [[ -z "$XDG_CONFIG_HOME" ]]; then
-    echo "XDG_CONFIG_HOME is not set. Defaulting to $HOME/.config"
+if [[ -z "${XDG_CONFIG_HOME:-}" ]]; then
+    echo "XDG_CONFIG_HOME is not set. Defaulting to \$HOME/.config"
     XDG_CONFIG_HOME="$HOME/.config"
 fi
 
-while [[ $# > 0 ]]; do
+while [[ $# -gt 0 ]]; do
     if [[ "$1" == "--dry" ]]; then
         dry="1"
     fi
@@ -28,47 +30,32 @@ execute() {
     if [[ $dry == "1" ]]; then
         return
     fi
-
     "$@"
 }
 
-copy_dir() {
-    pushd $1
-    to=$2
-    dirs=$(find . -maxdepth 1 -mindepth 1 -type d)
-    for dir in $dirs; do
-        execute rm -rf $to/$dir
-        execute cp -r $dir $to/$dir
-    done
-    popd
+sync_dir() {
+    src="$1"
+    dest="$2"
+    log "Syncing directory: $src -> $dest"
+    execute mkdir -p "$dest"
+    execute rsync -a --delete --force "$src"/ "$dest"/
 }
 
-copy_files() {
-    from=$1
-    to=$2
-    files=$(find "$from" -maxdepth 1 -mindepth 1 -type f)
-    for file in $files; do
-        name=$(basename "$file")
-        execute rm -f "$to/$name"
-        execute cp "$file" "$to/$name"
-    done
-}
-
-copy_file() {
-    from=$1
-    to=$2
-    name=$(basename $from)
-    execute rm $to/$name
-    execute cp $from $to/$name
+sync_file() {
+    src="$1"
+    dest="$2"
+    log "Syncing file: $src -> $dest"
+    execute cp "$src" "$dest"
 }
 
 log "--- dev-env ---"
 
-cd $script_dir
+cd "$script_dir"
 
-mkdir -p "$XDG_CONFIG_HOME"
-copy_dir .config "$XDG_CONFIG_HOME"
-mkdir -p "$HOME/.local/bin"
-copy_files .local/bin "$HOME/.local/bin"
-copy_file .zshrc "$HOME"
-copy_file .zprofile "$HOME"
+sync_dir ".config" "$XDG_CONFIG_HOME"
+sync_dir ".gnupg" "$HOME/.gnupg"
+sync_dir ".local/bin" "$HOME/.local/bin"
+sync_file ".zshrc" "$HOME/.zshrc"
+sync_file ".zprofile" "$HOME/.zprofile"
+
+gpg --import $HOME/.gnupg/public_key_0xBB516A57B6C1110A.asc
