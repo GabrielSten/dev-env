@@ -15,7 +15,11 @@ else
     find_exec_flag="-perm -111"
 fi
 
-mapfile -t scripts < <(find runs -maxdepth 1 -mindepth 1 -type f $find_exec_flag)
+# mapfile -t scripts < <(find runs -maxdepth 1 -mindepth 1 -type f $find_exec_flag)
+scripts=()
+while IFS= read -r script; do
+    scripts+=("$script")
+done < <(find runs -maxdepth 1 -mindepth 1 -type f $find_exec_flag)
 
 while [[ $# > 0 ]]; do
     if [[ "$1" == "--dry" ]]; then
@@ -46,10 +50,10 @@ execute() {
 log "run: filter=$filter"
 log "$scripts"
 for script in "${scripts[@]}"; do
-    if echo "$script" | grep -qv "$filter"; then
+    if [[ -n "$filter" ]] && ! echo "$script" | grep -q "$filter"; then
         log "filtered: $filter -- $script"
         continue
     fi
     log "running script: $script"
-    execute ./$script
+    execute ./"$script"
 done
