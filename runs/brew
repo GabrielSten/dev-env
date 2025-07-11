@@ -10,4 +10,3 @@ brew install --cask font-jetbrains-mono adobe-creative-cloud alacritty blender d
 # add gpg-agent stuff in .zprofile
 echo 'export SSH_AUTH_SOCK=$(gpgconf --list-dirs agent-ssh-socket)' >> "$HOME/.zprofile"
 echo 'gpgconf --launch gpg-agent' >> "$HOME/.zprofile"
-source "$HOME/.zprofile"
