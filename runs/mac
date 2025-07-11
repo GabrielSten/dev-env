@@ -5,9 +5,5 @@ curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.3/install.sh | bash
 
 # brew https://brew.sh/
 /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
-brew update
-brew upgrade
 
-brew install bun curl fzf go gopass grep grip k9s kustomize lua luarocks ollama openssh pass ripgrep sqlite tmux vault wget yabai yq jq neovim gpg
-
-brew install --cask font-jetbrains-mono adobe-creative-cloud alacritty blender datagrip discord docker docker-desktop figma gimp notion spotify zed
+source ~/.zprofile
