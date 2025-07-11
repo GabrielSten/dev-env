@@ -57,5 +57,3 @@ sync_dir ".gnupg" "$HOME/.gnupg"
 sync_dir ".local/bin" "$HOME/.local/bin"
 sync_file ".zshrc" "$HOME/.zshrc"
 sync_file ".zprofile" "$HOME/.zprofile"
-
-gpg --import $HOME/.gnupg/public_key_0xBB516A57B6C1110A.asc
