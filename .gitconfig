@@ -1,0 +1,25 @@
+[user]
+    name = Gabriel Lindman
+    email = gabriel.lindman@volvocars.com
+    signingkey = BB516A57B6C1110A
+
+[core]
+    autocrlf = input
+    editor = zed --wait
+    excludesfile = /Users/GLINDMAN/.gitignore_global
+
+[filter "lfs"]
+    required = true
+    clean = git-lfs clean -- %f
+    smudge = git-lfs smudge -- %f
+    process = git-lfs filter-process
+
+[pull]
+    ff = only
+
+[init]
+    defaultbranch = main
+
+[commit]
+    template = /Users/GLINDMAN/.stCommitMsg
+    gpgsign = true
