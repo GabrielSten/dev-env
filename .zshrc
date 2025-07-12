@@ -83,6 +83,7 @@ alias vim='nvim'
 alias c='clear'
 alias tailscale="/Applications/Tailscale.app/Contents/MacOS/Tailscale"
 alias ggraph="git log --all --decorate --oneline --graph"
+alias gacp="git add . && git commit -m 'gacp' && git push"
 alias battery='
 if [[ "$OSTYPE" == "darwin"* ]]; then
   pmset -g batt | grep -Eo "[0-9]+%" | head -n1
