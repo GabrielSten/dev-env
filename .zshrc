@@ -100,8 +100,9 @@ fi
 
 # tmux sessionizer
 zle_tmux_sessionizer() {
-  ~/bin/tmux-sessionizer
+  ~/.local/bin/tmux-sessionizer
 }
+
 zle -N zle_tmux_sessionizer
 
 # Keybindings (emac hotkeys for zsh)
