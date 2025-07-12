@@ -3,9 +3,9 @@
 brew update
 brew upgrade
 
-brew install oven-sh/bun/bun curl fzf go gopass grep grip k9s kustomize lua luarocks ollama openssh pass ripgrep sqlite tmux vault wget koekeishiya/formulae/yabai yq jq neovim gpg
+brew install oven-sh/bun/bun curl fzf go gopass grep grip k9s kustomize lua luarocks ollama openssh pass ripgrep sqlite tmux vault wget koekeishiya/formulae/yabai yq jq neovim gpg zoxide
 
-brew install --cask font-jetbrains-mono adobe-creative-cloud alacritty blender datagrip discord docker docker-desktop figma gimp notion spotify zed
+brew install --cask font-jetbrains-mono-nerd-font adobe-creative-cloud alacritty blender datagrip discord docker docker-desktop figma gimp notion spotify zed
 
 # add gpg-agent stuff, needs gpg
 source ~/.zprofile
@@ -13,4 +13,3 @@ source ~/.zprofile
 echo 'export SSH_AUTH_SOCK=$(gpgconf --list-dirs agent-ssh-socket)' >> "$HOME/.zprofile"
 echo 'gpgconf --launch gpg-agent' >> "$HOME/.zprofile"
 gpg --import $HOME/.gnupg/public_key_0xBB516A57B6C1110A.asc
-chmod 700 ~/.gnupg
