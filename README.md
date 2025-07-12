@@ -3,13 +3,20 @@
 run dev-env first
 
 ```sh
-chmod +x dev-env
+chmod +x ~/dev-env
 ./dev-env
 ```
 
 then the /runs scripts
 
 ```sh
-chmod +x run runs/*
+chmod +x ~/dev-env/run ~/dev-env/runs/*
 ./run
+```
+
+to run common scripts
+
+```sh
+chmod +x ~/.gnupg
+chmod +x ~/.local/bin/*
 ```
