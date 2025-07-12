@@ -13,3 +13,9 @@ then the /runs scripts
 chmod +x run runs/*
 ./run
 ```
+
+permissions for usage
+
+```sh
+chmod +x ~/.local/bin/*
+```
