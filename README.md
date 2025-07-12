@@ -17,6 +17,6 @@ chmod +x ~/dev-env/run ~/dev-env/runs/*
 to run common scripts
 
 ```sh
-chmod +x ~/.gnupg
+chmod 700 ~/.gnupg
 chmod +x ~/.local/bin/*
 ```

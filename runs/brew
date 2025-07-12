@@ -13,3 +13,12 @@ source ~/.zprofile
 echo 'export SSH_AUTH_SOCK=$(gpgconf --list-dirs agent-ssh-socket)' >> "$HOME/.zprofile"
 echo 'gpgconf --launch gpg-agent' >> "$HOME/.zprofile"
 gpg --import $HOME/.gnupg/public_key_0xBB516A57B6C1110A.asc
+
+# ssh stuff, needs gpg
+killall gpg-agent
+gpg-agent --daemon
+
+mkdir -p ~/.ssh
+touch ~/.ssh/gpg_ssh_key.pub
+ssh-add -L > ~/.ssh/gpg_ssh_key.pub
+cat ~/.ssh/gpg_ssh_key.pub >> ~/.ssh/authorized_keys
