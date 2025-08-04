@@ -77,6 +77,7 @@ zstyle ':fzf-tab:complete:cd:*' fzf-preview 'ls --color $realpath'
 zstyle ':fzf-tab:complete:__zoxide_z:*' fzf-preview 'ls --color $realpath'
 
 # Aliases
+alias air='~/go/bin/air'
 alias ls='ls --color'
 alias pass="gopass"
 alias vim='nvim'
@@ -136,3 +137,7 @@ unset __conda_setup
 
 # bun completions
 [ -s "/Users/GLINDMAN/.bun/_bun" ] && source "/Users/GLINDMAN/.bun/_bun"
+
+export NVM_DIR="$HOME/.nvm"
+[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
+[ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion

@@ -2,6 +2,10 @@
 
 # nvm https://github.com/nvm-sh/nvm?tab=readme-ov-file#installing-and-updating
 curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.3/install.sh | bash
+nvm install 22
+
+# yarn
+npm install --global yarn
 
 # brew https://brew.sh/
 /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
