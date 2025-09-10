@@ -3,7 +3,7 @@
 brew update
 brew upgrade
 
-brew install int128/kubelogin/kubelogin oven-sh/bun/bun curl fzf go gopass grep grip k9s kustomize lua luarocks ollama openssh pass ripgrep sqlite tmux vault wget koekeishiya/formulae/yabai yq jq neovim gpg zoxide
+brew install int128/kubelogin/kubelogin oven-sh/bun/bun curl fzf go gopass grep grip k9s kustomize lua luarocks ollama openssh pass ripgrep sqlite tmux vault wget koekeishiya/formulae/yabai yq jq neovim gpg zoxide gh
 
 brew install --cask slack rectangle google-chrome font-jetbrains-mono adobe-creative-cloud alacritty blender datagrip discord docker docker-desktop figma gimp notion spotify zed
 
