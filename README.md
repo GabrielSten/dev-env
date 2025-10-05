@@ -20,3 +20,9 @@ to run common scripts
 chmod 700 ~/.gnupg
 chmod +x ~/.local/bin/*
 ```
+
+## Adhoc
+
+```sh
+bash <(curl -sSL https://raw.githubusercontent.com/GabrielSten/dev-env/main/scripts/ssh)
+```
