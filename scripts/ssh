@@ -1,0 +1,52 @@
+#!/bin/bash
+
+set -e
+
+# Install dependencies if missing
+install_deps() {
+  if [ -f /etc/os-release ]; then
+    . /etc/os-release
+    if [[ "$ID" == "debian" || "$ID" == "ubuntu" ]]; then
+      sudo apt-get update
+      sudo apt-get install -y gnupg curl
+    elif [[ "$ID" == "fedora" ]]; then
+      sudo dnf install -y gnupg2 curl
+    fi
+  fi
+}
+
+for cmd in gpg curl grep cut mkdir chmod getent; do
+  if ! command -v $cmd &>/dev/null; then
+    install_deps
+    break
+  fi
+done
+
+# Set the URL to fetch your GPG public key
+GPG_URL="https://github.com/gabrielsten.gpg"
+
+USER_HOME="${HOME:-$(getent passwd $USER | cut -d: -f6)}"
+
+GPG_IMPORT_OUTPUT=$(curl -sSL "$GPG_URL" | gpg --import 2>&1)
+
+GPG_KEY_ID=$(echo "$GPG_IMPORT_OUTPUT" | grep 'key ' | grep -oP '[A-F0-9]{16,}' | head -n1)
+if [ -z "$GPG_KEY_ID" ]; then
+  GPG_KEY_ID=$(gpg --list-keys --with-colons | grep '^pub' | tail -n1 | cut -d: -f5)
+fi
+
+SSH_KEY=$(gpg --export-ssh-key "$GPG_KEY_ID")
+
+if [ -z "$SSH_KEY" ]; then
+  echo "Error: Failed to export SSH key from GPG key ID $GPG_KEY_ID."
+  exit 1
+fi
+
+SSH_DIR="$USER_HOME/.ssh"
+mkdir -p "$SSH_DIR"
+chmod 700 "$SSH_DIR"
+
+AUTHORIZED_KEYS="$SSH_DIR/authorized_keys"
+grep -qxF "$SSH_KEY" "$AUTHORIZED_KEYS" 2>/dev/null || echo "$SSH_KEY" >> "$AUTHORIZED_KEYS"
+chmod 600 "$AUTHORIZED_KEYS"
+
+echo "SSH key from GPG imported and authorized for user $USER."
