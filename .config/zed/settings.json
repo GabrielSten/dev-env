@@ -3,34 +3,34 @@
     "model_parameters": [],
     "default_model": {
       "provider": "copilot_chat",
-      "model": "gpt-5"
-    }
+      "model": "gpt-5",
+    },
   },
   "show_edit_predictions": false,
   "ui_font_size": 16,
   "buffer_font_size": 14,
   "buffer_font_family": "JetBrainsMono Nerd Font Mono",
   "vim_mode": true,
-  "relative_line_numbers": true,
+  "relative_line_numbers": "enabled",
   "current_line_highlight": "all",
   "theme": {
     "mode": "system",
     "light": "One Light",
-    "dark": "Tokyo Night"
+    "dark": "Tokyo Night",
   },
   "indent_guides": {
     "enabled": true,
     "background_coloring": "indent_aware",
-    "coloring": "indent_aware"
+    "coloring": "indent_aware",
   },
   "terminal": {
     "font_family": "JetBrainsMono Nerd Font Mono",
-    "font_size": 16
+    "font_size": 16,
   },
   "git": {
     "git_gutter": "tracked_files",
     "inline_blame": {
-      "enabled": true
-    }
-  }
+      "enabled": true,
+    },
+  },
 }
