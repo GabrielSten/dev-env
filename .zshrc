@@ -36,7 +36,6 @@ zinit snippet OMZP::git
 zinit snippet OMZP::docker-compose
 zinit snippet OMZP::golang
 zinit snippet OMZP::npm
-zinit snippet OMZP::gpg-agent
 zinit snippet OMZP::command-not-found
 
 # Brew completions
@@ -78,11 +77,17 @@ zstyle ':fzf-tab:complete:__zoxide_z:*' fzf-preview 'ls --color $realpath'
 
 # Aliases
 alias air='~/go/bin/air'
-alias ls='ls --color'
+if [[ "$OSTYPE" == "darwin"* ]]; then
+  alias ls='ls -G'
+else
+  alias ls='ls --color'
+fi
 alias pass="gopass"
 alias vim='nvim'
 alias c='clear'
-alias tailscale="/Applications/Tailscale.app/Contents/MacOS/Tailscale"
+if [[ "$OSTYPE" == "darwin"* ]]; then
+  alias tailscale="/Applications/Tailscale.app/Contents/MacOS/Tailscale"
+fi
 alias ggraph="git log --all --decorate --oneline --graph"
 alias gacp="git add . && git commit -m 'gacp' && git push"
 alias battery='
@@ -120,7 +125,8 @@ eval "$(zoxide init --cmd cd zsh)"
 # Gopass completion
 fpath=( ${GOPATH}/src/github.com/justwatchcom/gopass/completions "${fpath[@]}" )
 
-# >>> conda initialize >>>
+# >>> conda initialize (macOS only) >>>
+if [[ "$OSTYPE" == "darwin"* ]]; then
 # !! Contents within this block are managed by 'conda init' !!
 __conda_setup="$('/opt/homebrew/Caskroom/miniconda/base/bin/conda' 'shell.zsh' 'hook' 2> /dev/null)"
 if [ $? -eq 0 ]; then
@@ -133,10 +139,11 @@ else
     fi
 fi
 unset __conda_setup
+fi
 # <<< conda initialize <<<
 
 # bun completions
-[ -s "/Users/GLINDMAN/.bun/_bun" ] && source "/Users/GLINDMAN/.bun/_bun"
+[ -s "$HOME/.bun/_bun" ] && source "$HOME/.bun/_bun"
 
 export NVM_DIR="$HOME/.nvm"
 [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm

@@ -1,0 +1,75 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+ARCH="$(dpkg --print-architecture)"
+CODENAME="$(lsb_release -cs)"
+
+echo "--- Ubuntu setup: arch=${ARCH}, codename=${CODENAME} ---"
+
+# ── APT: core tools ──────────────────────────────────────────────────────────
+sudo apt-get update
+sudo apt-get install -y \
+    build-essential unzip curl wget git \
+    zsh \
+    gnupg gnupg2 gpg-agent scdaemon pcscd \
+    fzf tmux jq sqlite3 ripgrep \
+    lua5.4 luarocks \
+    pass \
+    yubikey-manager \
+    openssh-server \
+    xclip xsel
+
+# ── Default shell: zsh ───────────────────────────────────────────────────────
+if [[ "$SHELL" != "$(which zsh)" ]]; then
+    chsh -s "$(which zsh)"
+fi
+
+# ── nvm + Node 22 ────────────────────────────────────────────────────────────
+curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.3/install.sh | bash
+
+export NVM_DIR="$HOME/.nvm"
+[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
+
+nvm install 22
+
+# yarn
+npm install --global yarn
+
+# ── bun ──────────────────────────────────────────────────────────────────────
+curl -fsSL https://bun.sh/install | bash
+
+# ── GitHub CLI ───────────────────────────────────────────────────────────────
+curl -fsSL https://cli.github.com/packages/githubcli-archive-keyring.gpg \
+    | sudo dd of=/usr/share/keyrings/githubcli-archive-keyring.gpg
+sudo chmod go+r /usr/share/keyrings/githubcli-archive-keyring.gpg
+echo "deb [arch=${ARCH} signed-by=/usr/share/keyrings/githubcli-archive-keyring.gpg] https://cli.github.com/packages stable main" \
+    | sudo tee /etc/apt/sources.list.d/github-cli.list > /dev/null
+sudo apt-get update
+sudo apt-get install -y gh
+
+# ── GPG agent SSH support ────────────────────────────────────────────────────
+grep -qxF 'export SSH_AUTH_SOCK=$(gpgconf --list-dirs agent-ssh-socket)' "$HOME/.zprofile" \
+    || echo 'export SSH_AUTH_SOCK=$(gpgconf --list-dirs agent-ssh-socket)' >> "$HOME/.zprofile"
+grep -qxF 'gpgconf --launch gpg-agent' "$HOME/.zprofile" \
+    || echo 'gpgconf --launch gpg-agent' >> "$HOME/.zprofile"
+
+# Import GPG public key (local file preferred, fall back to github)
+if [[ -f "$HOME/.gnupg/public_key_0xBB516A57B6C1110A.asc" ]]; then
+    gpg --import "$HOME/.gnupg/public_key_0xBB516A57B6C1110A.asc"
+else
+    curl -sSL https://github.com/gabrielsten.gpg | gpg --import
+fi
+
+# ── SSH authorized key ───────────────────────────────────────────────────────
+SSH_PUBLIC_KEY="ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAACAQDuLfBk4MfBvOZC7JdqUmqWXcp/hgYRFZipIFOV5TlpTwSPw1PHZG6z5Uhj4NUO9SRP0Srwc0hJD/jpXZVQ7rLx1Ssn2UARwh1h9tyXb5I0BGsPWNPgT62PVw9By5kA4o3GR5644Jy1C7CiHpwiKYxcZP8YJGDiCpV62+SAd/lHmG3ZeY7Mmd/1eGtj6I23U7K4UuLurOPs7HZux/IzbeL+bMLOnHB32Vds9QxR90UYe2fygGQMxAX1oh2oiYkqPXKOjy878tAFSYz95cevRmbhEZ4Yag59mirc/3IaIuXzZFElITaVsAKX3BlhGDhetFlAyV6v1p/HNnCbbWpBk6bTcBTCSc0QqbX4w6FC7C89W9yS2caRj4FdQ07Yxyv/Ork9E11MVl4uNQjqpVcDIEwF4DL+ORmrM+B5CcotWSQ6vJHJD7TRRMQm6YL2yRZzzVX8Elzy7QnGcZyo+sTKsKPifqGKvX48WO7k0xLPAAoPgM5cu0JOOV6q2QU99C5+i9TMJ0Q44FBZLDRLlzGJCZIRdw+XnJGSeMBxglseopuHsF+z+pgeW5wb8mXpXy7crq+KslHQhIL6ruW/xcbapmkceSvzJeJv7Dcohnj0zr/oFJXkkScVFxVU0YHrahskReRcaNn5ijYFiW9vzFnqbl2qTvwG8c41n6TmU+ZSSRnhSQ== openpgp:0xBCBADC7D"
+mkdir -p "$HOME/.ssh"
+chmod 700 "$HOME/.ssh"
+touch "$HOME/.ssh/authorized_keys"
+chmod 600 "$HOME/.ssh/authorized_keys"
+grep -qxF "$SSH_PUBLIC_KEY" "$HOME/.ssh/authorized_keys" \
+    || echo "$SSH_PUBLIC_KEY" >> "$HOME/.ssh/authorized_keys"
+
+# ── Enable sshd ──────────────────────────────────────────────────────────────
+sudo systemctl enable ssh
+sudo systemctl restart ssh

@@ -15,30 +15,23 @@ install_deps() {
   fi
 }
 
-for cmd in gpg curl grep cut mkdir chmod getent; do
+for cmd in gpg curl grep mkdir chmod getent; do
   if ! command -v $cmd &>/dev/null; then
     install_deps
     break
   fi
 done
 
-# Set the URL to fetch your GPG public key
-GPG_URL="https://github.com/gabrielsten.gpg"
+# Known SSH public key (openpgp:0xBCBADC7D)
+SSH_KEY="ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAACAQDuLfBk4MfBvOZC7JdqUmqWXcp/hgYRFZipIFOV5TlpTwSPw1PHZG6z5Uhj4NUO9SRP0Srwc0hJD/jpXZVQ7rLx1Ssn2UARwh1h9tyXb5I0BGsPWNPgT62PVw9By5kA4o3GR5644Jy1C7CiHpwiKYxcZP8YJGDiCpV62+SAd/lHmG3ZeY7Mmd/1eGtj6I23U7K4UuLurOPs7HZux/IzbeL+bMLOnHB32Vds9QxR90UYe2fygGQMxAX1oh2oiYkqPXKOjy878tAFSYz95cevRmbhEZ4Yag59mirc/3IaIuXzZFElITaVsAKX3BlhGDhetFlAyV6v1p/HNnCbbWpBk6bTcBTCSc0QqbX4w6FC7C89W9yS2caRj4FdQ07Yxyv/Ork9E11MVl4uNQjqpVcDIEwF4DL+ORmrM+B5CcotWSQ6vJHJD7TRRMQm6YL2yRZzzVX8Elzy7QnGcZyo+sTKsKPifqGKvX48WO7k0xLPAAoPgM5cu0JOOV6q2QU99C5+i9TMJ0Q44FBZLDRLlzGJCZIRdw+XnJGSeMBxglseopuHsF+z+pgeW5wb8mXpXy7crq+KslHQhIL6ruW/xcbapmkceSvzJeJv7Dcohnj0zr/oFJXkkScVFxVU0YHrahskReRcaNn5ijYFiW9vzFnqbl2qTvwG8c41n6TmU+ZSSRnhSQ== openpgp:0xBCBADC7D"
 
-USER_HOME="${HOME:-$(getent passwd $USER | cut -d: -f6)}"
+USER_HOME="${HOME:-$(getent passwd "$USER" | cut -d: -f6)}"
 
-GPG_IMPORT_OUTPUT=$(curl -sSL "$GPG_URL" | gpg --import 2>&1)
-
-GPG_KEY_ID=$(echo "$GPG_IMPORT_OUTPUT" | grep 'key ' | grep -oP '[A-F0-9]{16,}' | head -n1)
-if [ -z "$GPG_KEY_ID" ]; then
-  GPG_KEY_ID=$(gpg --list-keys --with-colons | grep '^pub' | tail -n1 | cut -d: -f5)
-fi
-
-SSH_KEY=$(gpg --export-ssh-key "$GPG_KEY_ID")
-
-if [ -z "$SSH_KEY" ]; then
-  echo "Error: Failed to export SSH key from GPG key ID $GPG_KEY_ID."
-  exit 1
+# Import GPG public key (local file preferred, fall back to github)
+if [[ -f "$USER_HOME/.gnupg/public_key_0xBB516A57B6C1110A.asc" ]]; then
+  gpg --import "$USER_HOME/.gnupg/public_key_0xBB516A57B6C1110A.asc"
+else
+  curl -sSL https://github.com/gabrielsten.gpg | gpg --import
 fi
 
 SSH_DIR="$USER_HOME/.ssh"
@@ -46,7 +39,8 @@ mkdir -p "$SSH_DIR"
 chmod 700 "$SSH_DIR"
 
 AUTHORIZED_KEYS="$SSH_DIR/authorized_keys"
-grep -qxF "$SSH_KEY" "$AUTHORIZED_KEYS" 2>/dev/null || echo "$SSH_KEY" >> "$AUTHORIZED_KEYS"
+touch "$AUTHORIZED_KEYS"
+grep -qxF "$SSH_KEY" "$AUTHORIZED_KEYS" || echo "$SSH_KEY" >> "$AUTHORIZED_KEYS"
 chmod 600 "$AUTHORIZED_KEYS"
 
 echo "SSH key from GPG imported and authorized for user $USER."
