@@ -48,13 +48,29 @@ sync_file() {
     execute cp "$src" "$dest"
 }
 
+gpg_setup() {
+    log "Setting up GPG..."
+    execute mkdir -p "$HOME/.gnupg"
+    execute chmod 700 "$HOME/.gnupg"
+    execute cp .gnupg/gpg-agent.conf "$HOME/.gnupg/gpg-agent.conf"
+    execute cp .gnupg/gpg.conf "$HOME/.gnupg/gpg.conf"
+    execute cp .gnupg/scdaemon.conf "$HOME/.gnupg/scdaemon.conf"
+    log "Importing public key from GitHub..."
+    if [[ $dry == "0" ]]; then
+        curl -sf https://github.com/gabrielsten.gpg | gpg --import
+    else
+        log "[DRY_RUN]: curl https://github.com/gabrielsten.gpg | gpg --import"
+    fi
+}
+
 log "--- dev-env ---"
 
 cd "$script_dir"
 
 sync_dir ".config" "$XDG_CONFIG_HOME"
-sync_dir ".gnupg" "$HOME/.gnupg"
+gpg_setup
 sync_dir ".local/bin" "$HOME/.local/bin"
+execute chmod +x "$HOME/.local/bin/tmux-sessionizer"
 sync_file ".zshrc" "$HOME/.zshrc"
 sync_file ".zprofile" "$HOME/.zprofile"
 sync_file ".gitconfig" "$HOME/.gitconfig"

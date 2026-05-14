@@ -3,20 +3,20 @@
 brew update
 brew upgrade
 
-brew install int128/kubelogin/kubelogin oven-sh/bun/bun curl fzf go gopass grep grip k9s kustomize lua luarocks ollama openssh pass ripgrep sqlite tmux vault wget koekeishiya/formulae/yabai yq jq neovim gpg zoxide gh ykman
+brew install oven-sh/bun/bun curl fzf go gopass grep grip k9s kustomize lua luarocks ollama openssh pass ripgrep sqlite tmux wget koekeishiya/formulae/yabai yq jq neovim gpg zoxide gh ykman copilot-cli int128/kubelogin/kubelogin
 
-brew install --cask slack rectangle google-chrome font-jetbrains-mono adobe-creative-cloud alacritty blender datagrip discord docker docker-desktop figma gimp notion spotify zed
+brew install --cask microsoft-outlook slack rectangle google-chrome font-jetbrains-mono-nerd-font adobe-creative-cloud alacritty blender datagrip discord docker docker-desktop figma gimp notion spotify zed
 
-# add gpg-agent stuff, needs gpg
+# gpg: dotfiles are managed by ./dev-env — just launch the agent and import keys
 source ~/.zprofile
-echo 'export SSH_AUTH_SOCK=$(gpgconf --list-dirs agent-ssh-socket)' >> "$HOME/.zprofile"
-echo 'gpgconf --launch gpg-agent' >> "$HOME/.zprofile"
-gpg --import $HOME/.gnupg/public_key_0xBB516A57B6C1110A.asc
+for key in "$HOME/.gnupg/public_key_"*.asc; do
+    [[ -f "$key" ]] && gpg --import "$key"
+done
 
 # ssh stuff, needs gpg
-killall gpg-agent
-gpg-agent --daemon
+gpgconf --kill gpg-agent
+gpgconf --launch gpg-agent
+gpg-connect-agent updatestartuptty /bye
 mkdir -p ~/.ssh
-touch ~/.ssh/gpg_ssh_key.pub
 ssh-add -L > ~/.ssh/gpg_ssh_key.pub
 cat ~/.ssh/gpg_ssh_key.pub >> ~/.ssh/authorized_keys
