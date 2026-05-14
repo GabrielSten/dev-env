@@ -118,6 +118,10 @@ bindkey '^n' history-search-forward
 bindkey '^[w' kill-region
 bindkey '^f' zle_tmux_sessionizer
 
+# GPG TTY — must run per interactive shell so pinentry works in every tmux pane
+export GPG_TTY=$(tty)
+gpg-connect-agent updatestartuptty /bye > /dev/null
+
 # Shell integrations
 eval "$(fzf --zsh)"
 eval "$(zoxide init --cmd cd zsh)"

@@ -9,3 +9,7 @@ fi
 
 # backstage
 export NODE_OPTIONS="${NODE_OPTIONS:-} --no-node-snapshot"
+
+# gpg ssh
+export SSH_AUTH_SOCK=$(gpgconf --list-dirs agent-ssh-socket)
+gpgconf --launch gpg-agent
