@@ -3,20 +3,29 @@
 brew update
 brew upgrade
 
-brew install oven-sh/bun/bun curl fzf go gopass grep grip k9s kustomize lua luarocks ollama openssh pass ripgrep sqlite tmux wget koekeishiya/formulae/yabai yq jq neovim gpg zoxide gh ykman copilot-cli int128/kubelogin/kubelogin
+brew install oven-sh/bun/bun curl fzf go gopass grep grip k9s kustomize lua luarocks ollama openssh pass pinentry-mac ripgrep sqlite tmux wget koekeishiya/formulae/yabai yq jq neovim gpg zoxide gh ykman copilot-cli int128/kubelogin/kubelogin
 
-brew install --cask microsoft-outlook slack rectangle google-chrome font-jetbrains-mono-nerd-font adobe-creative-cloud alacritty blender datagrip discord docker docker-desktop figma gimp notion spotify zed
+brew install --cask microsoft-outlook slack rectangle google-chrome font-jetbrains-mono-nerd-font adobe-creative-cloud alacritty blender datagrip discord docker docker-desktop figma gimp notion spotify tailscale zed
 
-# gpg: dotfiles are managed by ./dev-env — just launch the agent and import keys
+# gpg: import public key from GitHub and link to YubiKey
 source ~/.zprofile
-for key in "$HOME/.gnupg/public_key_"*.asc; do
-    [[ -f "$key" ]] && gpg --import "$key"
-done
-
-# ssh stuff, needs gpg
+curl -sf https://github.com/gabrielsten.gpg | gpg --import
 gpgconf --kill gpg-agent
 gpgconf --launch gpg-agent
-gpg-connect-agent updatestartuptty /bye
+gpg --card-status
+
+# add auth subkey keygrip to sshcontrol so the YubiKey works for SSH
+AUTH_KEYGRIP=$(gpg --with-keygrip --list-keys | grep -A1 '\[A\]' | grep Keygrip | awk '{print $3}')
+if [[ -n "$AUTH_KEYGRIP" ]]; then
+    grep -qF "$AUTH_KEYGRIP" ~/.gnupg/sshcontrol 2>/dev/null || echo "$AUTH_KEYGRIP" >> ~/.gnupg/sshcontrol
+    echo "Added auth keygrip to sshcontrol: $AUTH_KEYGRIP"
+else
+    echo "⚠️  Could not find auth keygrip — insert YubiKey and run manually:"
+    echo "    gpg --with-keygrip --list-keys | grep -A1 '\\[A\\]'"
+    echo "    echo <keygrip> >> ~/.gnupg/sshcontrol"
+fi
+
+# ssh stuff: export public key for reference
 mkdir -p ~/.ssh
 ssh-add -L > ~/.ssh/gpg_ssh_key.pub
 cat ~/.ssh/gpg_ssh_key.pub >> ~/.ssh/authorized_keys
